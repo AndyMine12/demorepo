@@ -1,7 +1,8 @@
 from fastapi import FastAPI
+from IRepository import DirectoryRepository
 
 app = FastAPI()
-
+directory_repo: DirectoryRepository
 
 @app.get("/status")
 def get_status():
@@ -20,11 +21,11 @@ def create_directory(name: str, emails: list[str]):
   return "Not Implemented"
 
 @app.put("/directories/{id}")
-def update_directory(id: int):
+def update_directory(id: int, name: str, emails: list[str]):
   return "Not Implemented"
 
 @app.patch("/directories/{id}")
-def partially_update_directory(id: int):
+def partially_update_directory(id: int, name: (str | None) = None, emails: (list[str] | None) = None):
   return "Not Implemented"
 
 @app.delete("/directories/{id}")
