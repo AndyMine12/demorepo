@@ -1,8 +1,26 @@
 from fastapi import FastAPI
+from sqlmodel import SQLModel, create_engine, text
 from Repository import DirectoryRepository
+from dotenv import load_dotenv
+import os
 
 app = FastAPI()
-directory_repo: DirectoryRepository
+
+load_dotenv(".env")
+
+#HACK: This checks if database exists and creates it if not, not very proud of how it's done but it works
+init = create_engine(f"postgresql+pg8000://{os.getenv("DB_USERNAME")}:{os.getenv("DB_PASSWORD")}@{os.getenv("DB_HOST")}:{os.getenv("DB_PORT")}/postgres", isolation_level="AUTOCOMMIT")
+
+with init.connect() as connection:
+  result = connection.execute(text(f"select exists(SELECT datname FROM pg_catalog.pg_database WHERE lower(datname) = lower('{os.getenv("DB_NAME")}'));"))
+  if not result.fetchone().tuple()[0]:
+    connection.execute(text(f"CREATE DATABASE {os.getenv("DB_NAME")};"))
+
+init.dispose()
+
+engine = create_engine(f"postgresql+pg8000://{os.getenv("DB_USERNAME")}:{os.getenv("DB_PASSWORD")}@{os.getenv("DB_HOST")}:{os.getenv("DB_PORT")}/{os.getenv("DB_NAME")}")
+SQLModel.metadata.create_all(engine)
+directory_repo: DirectoryRepository = DirectoryRepository(engine)
 
 @app.get("/status")
 def get_status():

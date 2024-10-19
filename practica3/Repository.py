@@ -1,9 +1,11 @@
-from sqlmodel import Session
+
+import directory
 from directory import Directory
 
 class DirectoryRepository():
-  def __init__(self):
-    pass
+  def __init__(self, engine):
+    self.engine = engine
+    
   
   def get_count(self) -> int:
     pass
