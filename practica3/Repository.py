@@ -1,5 +1,7 @@
+from sqlmodel import Field, Session, SQLModel
+
 class DirectoryRepository():
-  def __init__(self, path: str):
+  def __init__(self):
     pass
   
   def get_count(self):

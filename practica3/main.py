@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from IRepository import DirectoryRepository
+from Repository import DirectoryRepository
 
 app = FastAPI()
 directory_repo: DirectoryRepository
