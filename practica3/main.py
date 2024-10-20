@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from sqlmodel import SQLModel, create_engine, text
 from Repository import DirectoryRepository
+from directoryDTO import DirectoryDTO
 from dotenv import load_dotenv
 import os
 
@@ -35,8 +36,9 @@ def get_directory_by_id(id: int):
   return "Not Implemented"
 
 @app.post("/directories")
-def create_directory(name: str, emails: list[str]):
-  return "Not Implemented"
+def create_directory(directory: DirectoryDTO):
+  return directory_repo.create(directory.name, directory.emails)
+
 
 @app.put("/directories/{id}")
 def update_directory(id: int, name: str, emails: list[str]):

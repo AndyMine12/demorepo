@@ -1,6 +1,7 @@
 
 import directory
-from directory import Directory
+from directory import Directory, Email
+from sqlmodel import Session
 
 class DirectoryRepository():
   def __init__(self, engine):
@@ -17,7 +18,15 @@ class DirectoryRepository():
     pass
 
   def create(self, name: str, emails: list[str]) -> Directory:
+    newEmails = [Email(content=email) for email in emails]
+    newDirectory: Directory = Directory(name=name, emails=newEmails)
+    with Session(self.engine) as session:
+      session.add(newDirectory)
+      session.commit()
+      session.refresh(newDirectory)
+      return newDirectory
     pass
+
 
   def update(self, id: int, name: (str | None) = None, emails: (list[str] | None) = None) -> Directory:
     pass
