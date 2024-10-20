@@ -1,0 +1,43 @@
+version: '3.9'
+
+services:
+  postgres-db:
+    image: 'postgres:15.0-alpine'
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    # networks:
+    #   - cnp2_net  #supongo que aquí va algo de nosotros
+    # healthcheck:
+    #   test: ["CMD", "pg_isready"]
+    #   start_period: 30s
+
+
+  demorepo-app:
+    build: .
+    restart: always
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - .:/demorepo
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres-db
+    environment:
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=${DB_NAME}
+
+volumes:
+  postgres_data:
+
+# networks:
+#   cnp2_net:
