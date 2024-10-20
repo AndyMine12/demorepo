@@ -41,8 +41,8 @@ def create_directory(directory: DirectoryDTO):
 
 
 @app.put("/directories/{id}")
-def update_directory(id: int, name: str, emails: list[str]):
-  return directory_repo.update(id, name, emails)
+def update_directory(id: int, directory: DirectoryDTO):
+  return directory_repo.update(id, directory.name, directory.emails)
 
 @app.patch("/directories/{id}")
 def partially_update_directory(id: int, name: (str | None) = None, emails: (list[str] | None) = None):
