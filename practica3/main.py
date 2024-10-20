@@ -33,7 +33,7 @@ def get_all_directories():
 
 @app.get("/directories/{id}")
 def get_directory_by_id(id: int):
-  return directory_repo.find_by_id()
+  return directory_repo.find_by_id(id)
 
 @app.post("/directories")
 def create_directory(directory: DirectoryDTO):
