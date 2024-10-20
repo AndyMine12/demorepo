@@ -29,11 +29,11 @@ def get_status():
 
 @app.get("/directories")
 def get_all_directories():
-  return "Not Implemented"
+  return directory_repo.find_all()
 
 @app.get("/directories/{id}")
 def get_directory_by_id(id: int):
-  return "Not Implemented"
+  return directory_repo.find_by_id()
 
 @app.post("/directories")
 def create_directory(directory: DirectoryDTO):
@@ -42,12 +42,12 @@ def create_directory(directory: DirectoryDTO):
 
 @app.put("/directories/{id}")
 def update_directory(id: int, name: str, emails: list[str]):
-  return "Not Implemented"
+  return directory_repo.update(id, name, emails)
 
 @app.patch("/directories/{id}")
 def partially_update_directory(id: int, name: (str | None) = None, emails: (list[str] | None) = None):
-  return "Not Implemented"
+  return directory_repo.update(id, name, emails)
 
 @app.delete("/directories/{id}")
 def delete_directory_by_id(id: int):
-  return "Not Implemented"
+  return directory_repo.delete(id)
