@@ -12,12 +12,11 @@ services:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-    # networks:
-    #   - cnp2_net  #supongo que aquí va algo de nosotros
-    # healthcheck:
-    #   test: ["CMD", "pg_isready"]
-    #   start_period: 30s
-
+    networks:
+      - demorepo_net
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      start_period: 30s
 
   demorepo-app:
     build: .
@@ -32,12 +31,14 @@ services:
     environment:
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
-      - DB_HOST=db
+      - DB_HOST=postgres-db
       - DB_PORT=5432
       - DB_NAME=${DB_NAME}
-
+    networks:
+      - demorepo_net
+      
 volumes:
   postgres_data:
 
-# networks:
-#   cnp2_net:
+networks:
+  demorepo_net:
