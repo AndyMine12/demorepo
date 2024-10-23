@@ -1,6 +1,6 @@
 
-import directory
-from directory import Directory, Email
+import practica3.directory
+from practica3.directory import Directory, Email
 from sqlmodel import Session
 
 class DirectoryRepository():

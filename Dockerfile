@@ -24,10 +24,10 @@ COPY --from=build /demorepo /opt/demorepo
 WORKDIR /opt/demorepo
 
 # Instalar las dependencias en la fase final
-RUN pip install --no-cache-dir -r /opt/demorepo/requirements.txt
+RUN pip install --default-timeout=1000 --no-cache-dir -r /opt/demorepo/requirements.txt
 
 USER wsuser:wsuser
 
 EXPOSE 8000
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD ["uvicorn", "practica3.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
