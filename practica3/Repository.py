@@ -30,11 +30,15 @@ class DirectoryRepository():
       query = select(Directory, Email.content).where(Directory.id == id).where(Email.directory_id == Directory.id)
       resultIter = session.exec(query)
       
+      resultid = None
+      resultname = None
       resultemails = []
       for item,email in resultIter:
         resultid = item.id
         resultname = item.name
         resultemails.append(email)
+      if resultid is None:
+        return None
       result = DirectoryResponseDTO(id=resultid, name=resultname, emails=resultemails)
         
       return result
@@ -53,6 +57,8 @@ class DirectoryRepository():
     with Session(self.engine) as session:
       result = session.exec(select(Directory).where(Directory.id == id))
       updatingDirectory:Directory = result.first()
+      if updatingDirectory is None:
+        return None
 
       prevDirectory:DirectoryResponseDTO = self.find_by_id(id)
       prevEmails = [Email(content=email) for email in prevDirectory.emails]

@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from sqlmodel import SQLModel, create_engine, text
 from practica3.Repository import DirectoryRepository
 from practica3.directoryDTO import DirectoryDTO
@@ -28,8 +28,14 @@ def get_status():
   return "Pong!"
 
 @app.get("/directories")
-def get_all_directories(page: int | None= 1,perpage : int | None=5):
-  return directory_repo.find_all(page, perpage)
+def get_all_directories(request: Request, perpage : int | None=5, page: int | None= 1):
+  referer = request.headers.get('referer')
+  next = referer
+  next[len(next)-1] = str(int(next[len(next)-1]) + 1)
+  prev = referer
+  prev[len(prev)-1] = str(int(next[len(prev)-1]) - 1)
+  result = { "count": directory_repo.get_count(), "next":next, "previous":prev, "results":directory_repo.find_all(page, perpage)}
+  return result
 
 @app.get("/directories/{id}")
 def get_directory_by_id(id: int):
