@@ -29,12 +29,18 @@ def get_status():
 
 @app.get("/directories")
 def get_all_directories(request: Request, perpage : int | None=5, page: int | None= 1):
-  referer = request.headers.get('referer')
-  next = referer
-  next[len(next)-1] = str(int(next[len(next)-1]) + 1)
-  prev = referer
-  prev[len(prev)-1] = str(int(next[len(prev)-1]) - 1)
-  result = { "count": directory_repo.get_count(), "next":next, "previous":prev, "results":directory_repo.find_all(page, perpage)}
+  urlobj = request.url
+  url = str(urlobj)
+  count = directory_repo.get_count()
+  next = url.replace("&page="+str(page),"&page="+str(page+1))
+  next = next.replace("?page="+str(page),"?page="+str(page+1))
+  if((page)*perpage >= count):
+    next = None
+  prev = url.replace("&page="+str(page),"&page="+str(page-1))
+  prev = prev.replace("?page="+str(page),"?page="+str(page-1))
+  if(page == 1):
+    prev = None
+  result = { "count": count, "next":next, "previous":prev, "results":directory_repo.find_all(page, perpage)}
   return result
 
 @app.get("/directories/{id}")

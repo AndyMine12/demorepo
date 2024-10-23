@@ -19,7 +19,8 @@ class DirectoryRepository():
 
   def find_all(self, page: int, perpage: int) -> list[Directory]:
     with Session(self.engine) as session:
-      queryResult = session.exec(select(Directory).offset((page-1)*perpage).limit(perpage).where(Directory.id == id))
+      offset:int = round((page - 1)*perpage)
+      queryResult = session.exec(select(Directory).offset(offset).limit(perpage))
       resultList = []
       for item in queryResult:
         resultList.append(self.find_by_id(item.id))
