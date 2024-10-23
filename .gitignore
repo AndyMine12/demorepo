@@ -4,7 +4,7 @@ __pycache__/
 *$py.class
 
 # Python virtual environment configuration
-*.cfg
+practica3/pyvenv.cfg
 
 # C extensions
 *.so
