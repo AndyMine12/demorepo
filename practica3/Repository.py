@@ -10,10 +10,20 @@ class DirectoryRepository():
     
   
   def get_count(self) -> int:
-    pass
+    with Session(self.engine) as session:
+      result = session.exec(select(Directory))
+      count = 0
+      for item in result:
+        count += 1
+      return count
 
   def find_all(self, page: int, perpage: int) -> list[Directory]:
-    pass
+    with Session(self.engine) as session:
+      queryResult = session.exec(select(Directory).offset((page-1)*perpage).limit(perpage).where(Directory.id == id))
+      resultList = []
+      for item in queryResult:
+        resultList.append(self.find_by_id(item.id))
+      return resultList
 
   def find_by_id(self, id: int) -> Directory:
     with Session(self.engine) as session:
@@ -42,20 +52,17 @@ class DirectoryRepository():
   def update(self, id: int, name: (str | None) = None, emails: (list[str] | None) = None) -> Directory:
     with Session(self.engine) as session:
       result = session.exec(select(Directory).where(Directory.id == id))
-      updatingDirectory:Directory = result.one()
-      #prevDirectory:DirectoryResponseDTO = self.find_by_id(id)
-      #updatingDirectory:Directory = Directory(id=prevDirectory.id, name=prevDirectory.name, emails=prevDirectory.emails)
+      updatingDirectory:Directory = result.first()
+
+      prevDirectory:DirectoryResponseDTO = self.find_by_id(id)
+      prevEmails = [Email(content=email) for email in prevDirectory.emails]
+      updatingDirectory.emails = prevEmails
 
       if name is not None:
         updatingDirectory.name = name
 
       if emails is not None:
         updatingDirectory.emails = [Email(content=email) for email in emails]
-      else:
-        updatingDirectory.emails = []
-        query = session.exec(select(Email.content).where(Email.directory_id == id))
-        for item in query:
-          updatingDirectory.emails.append(Email(content=item))
 
       session.add(updatingDirectory)
       session.commit()
@@ -63,4 +70,12 @@ class DirectoryRepository():
       return updatingDirectory
 
   def delete(self, id: int) -> bool:
-    pass
+    with Session(self.engine) as session:
+      statement = select(Directory).where(Directory.id == id)
+      results = session.exec(statement)
+      direc = results.first()
+      if direc is None:
+        return False
+      session.delete(direc)
+      session.commit()
+      return True

@@ -28,8 +28,8 @@ def get_status():
   return "Pong!"
 
 @app.get("/directories")
-def get_all_directories():
-  return directory_repo.find_all()
+def get_all_directories(page: int | None= 1,perpage : int | None=5):
+  return directory_repo.find_all(page, perpage)
 
 @app.get("/directories/{id}")
 def get_directory_by_id(id: int):
