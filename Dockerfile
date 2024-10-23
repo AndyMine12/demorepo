@@ -24,7 +24,7 @@ COPY --from=build /demorepo /opt/demorepo
 WORKDIR /opt/demorepo
 
 # Instalar las dependencias en la fase final
-RUN pip install --default-timeout=1000 --no-cache-dir -r /opt/demorepo/requirements.txt
+RUN pip install --no-cache-dir -r /opt/demorepo/requirements.txt
 
 USER wsuser:wsuser
 

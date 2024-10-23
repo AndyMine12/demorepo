@@ -11,7 +11,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - ${DB_PORT}:${DB_PORT}
+      - "${DB_PORT}:${DB_PORT}"
     networks:
       - demorepo_net
     healthcheck:
