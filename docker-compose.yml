@@ -11,7 +11,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - ${DB_PORT}:${DB_PORT}
     networks:
       - demorepo_net
     healthcheck:
@@ -25,14 +25,14 @@ services:
     volumes:
       - .:/demorepo
     ports:
-      - "8000:8000"
+      - 8000:8000
     depends_on:
       - postgres-db
     environment:
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_HOST=postgres-db
-      - DB_PORT=5432
+      - DB_PORT=${DB_PORT}
       - DB_NAME=${DB_NAME}
     networks:
       - demorepo_net
