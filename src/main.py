@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request
 from sqlmodel import SQLModel, create_engine, text
-from practica3.Repository import DirectoryRepository
-from practica3.directoryDTO import DirectoryDTO
+from src.Repository import DirectoryRepository
+from src.directoryDTO import DirectoryDTO
 from dotenv import load_dotenv
 import os
 
