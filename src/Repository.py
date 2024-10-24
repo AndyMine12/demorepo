@@ -44,37 +44,41 @@ class DirectoryRepository():
         
       return result
 
-  def create(self, name: str, emails: list[str]) -> Directory:
+  def create(self, name: str, emails: list[str]) -> DirectoryResponseDTO:
     newEmails = [Email(content=email) for email in emails]
     newDirectory: Directory = Directory(name=name, emails=newEmails)
     with Session(self.engine) as session:
       session.add(newDirectory)
       session.commit()
       session.refresh(newDirectory)
-      return newDirectory
+
+      return DirectoryResponseDTO(id= newDirectory.id, name= newDirectory.name, emails= emails)
 
 
-  def update(self, id: int, name: (str | None) = None, emails: (list[str] | None) = None) -> Directory:
+  def update(self, id: int, name: (str | None) = None, emails: (list[str] | None) = None) -> DirectoryResponseDTO:
     with Session(self.engine) as session:
       result = session.exec(select(Directory).where(Directory.id == id))
       updatingDirectory:Directory = result.first()
       if updatingDirectory is None:
         return None
 
-      prevDirectory:DirectoryResponseDTO = self.find_by_id(id)
-      prevEmails = [Email(content=email) for email in prevDirectory.emails]
-      updatingDirectory.emails = prevEmails
-
       if name is not None:
         updatingDirectory.name = name
 
+      updatingEmails: list[Email]
       if emails is not None:
-        updatingDirectory.emails = [Email(content=email) for email in emails]
+        updatingEmails = [Email(content=email) for email in emails]
+      else:
+        prevDirectory:DirectoryResponseDTO = self.find_by_id(id)
+        updatingEmails = [Email(content=email) for email in prevDirectory.emails]
+
+      updatingDirectory.emails = updatingEmails
 
       session.add(updatingDirectory)
       session.commit()
       session.refresh(updatingDirectory)
-      return updatingDirectory
+    
+      return DirectoryResponseDTO(id= updatingDirectory.id, name= updatingDirectory.name, emails= [str(email) for email in updatingEmails])
 
   def delete(self, id: int) -> bool:
     with Session(self.engine) as session:
@@ -85,4 +89,5 @@ class DirectoryRepository():
         return False
       session.delete(direc)
       session.commit()
+    
       return True

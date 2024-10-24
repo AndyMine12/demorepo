@@ -11,7 +11,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "${DB_PORT}:${DB_PORT}"
+      - "5432:5432"
     networks:
       - demorepo_net
     healthcheck:
@@ -22,8 +22,8 @@ services:
     build: .
     restart: always
     command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
-    volumes:
-      - .:/demorepo
+    # volumes:
+    #   - .:/demorepo
     ports:
       - 8000:8000
     depends_on:
