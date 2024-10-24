@@ -1,7 +1,7 @@
 
-import practica3.directory
-from practica3.directory import Directory, Email
-from practica3.directoryDTO import DirectoryResponseDTO
+import src.directory
+from src.directory import Directory, Email
+from src.directoryDTO import DirectoryResponseDTO
 from sqlmodel import Session, select
 
 class DirectoryRepository():
