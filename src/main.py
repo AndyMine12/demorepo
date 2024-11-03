@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
 from sqlmodel import SQLModel, create_engine, text
 from src.Repository import DirectoryRepository
 from src.directoryDTO import DirectoryDTO
@@ -7,6 +7,7 @@ import os
 
 app = FastAPI()
 
+#! Delete later. Is unnecessary on Docker installation per professor's opinion
 load_dotenv("../.env")
 
 #HACK: This checks if database exists and creates it if not, not very proud of how it's done but it works
@@ -23,12 +24,13 @@ engine = create_engine(f"postgresql+pg8000://{os.getenv('DB_USERNAME')}:{os.gete
 SQLModel.metadata.create_all(engine)
 directory_repo: DirectoryRepository = DirectoryRepository(engine)
 
-@app.get("/status")
+@app.get("/status", status_code = 200)
 def get_status():
   return "Pong!"
 
-@app.get("/directories")
+@app.get("/directories", status_code = 200)
 def get_all_directories(request: Request, perpage : int | None=5, page: int | None= 1):
+  #Construct next/prev url links
   urlobj = request.url
   url = str(urlobj)
   count = directory_repo.get_count()
@@ -40,26 +42,42 @@ def get_all_directories(request: Request, perpage : int | None=5, page: int | No
   prev = prev.replace("?page="+str(page),"?page="+str(page-1))
   if(page == 1):
     prev = None
-  result = { "count": count, "next":next, "previous":prev, "results":directory_repo.find_all(page, perpage)}
+  
+  #Obtain paginated result
+  queryResult = directory_repo.find_all(page, perpage)
+  if (queryResult == []):
+    raise HTTPException(404, "No results found")
+  result = { "count": count, "next":next, "previous":prev, "results":queryResult}
   return result
 
-@app.get("/directories/{id}")
+@app.get("/directories/{id}", status_code = 200)
 def get_directory_by_id(id: int):
-  return directory_repo.find_by_id(id)
+  result = directory_repo.find_by_id(id)
+  if (result is None):
+    raise HTTPException(404, "User not found")
+  return result
 
-@app.post("/directories")
+@app.post("/directories", status_code = 201)
 def create_directory(directory: DirectoryDTO):
   return directory_repo.create(directory.name, directory.emails)
 
 
-@app.put("/directories/{id}")
+@app.put("/directories/{id}", status_code=200)
 def update_directory(id: int, directory: DirectoryDTO):
-  return directory_repo.update(id, directory.name, directory.emails)
+  result = directory_repo.update(id, directory.name, directory.emails)
+  if (result is None):
+    raise HTTPException(404, "Target user not found")
+  return result
 
-@app.patch("/directories/{id}")
+@app.patch("/directories/{id}", status_code=200)
 def partially_update_directory(id: int, name: (str | None) = None, emails: (list[str] | None) = None):
-  return directory_repo.update(id, name, emails)
+  result = directory_repo.update(id, name, emails)
+  if (result is None):
+    raise HTTPException(404, "Target user not found")
+  return result
 
-@app.delete("/directories/{id}")
+@app.delete("/directories/{id}", status_code = 204)
 def delete_directory_by_id(id: int):
-  return directory_repo.delete(id)
+  statusResult = directory_repo.delete(id)
+  if (not statusResult):
+    raise HTTPException(404, "Target user not found") 
