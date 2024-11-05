@@ -22,13 +22,13 @@ RUN apt-get update -y \
     && groupadd -g 5000 -r wsuser \
     && useradd -r -M -u 5000 -g wsuser wsuser
 
-# Copiar solo las dependencias necesarias
 COPY --from=build /demorepo /opt/demorepo
+COPY --from=build /opt/demorepo/venv /opt/demorepo/venv
 
 WORKDIR /opt/demorepo
 
-# Instalar las dependencias en la fase final
-RUN pip install --no-cache-dir -r /opt/demorepo/requirements.txt
+ENV PATH="/opt/demorepo/venv/bin:$PATH"
+ENV PYTHONPATH="${PYTHONPATH}:/opt/demorepo"
 
 USER wsuser:wsuser
 
