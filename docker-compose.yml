@@ -5,9 +5,9 @@ services:
     image: 'postgres:15.0-alpine'
     restart: always
     environment:
-      POSTGRES_USER: ${DB_USERNAME}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: grupo4
+      POSTGRES_DB: LosVinos
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -23,16 +23,18 @@ services:
     build: .
     restart: always
     command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+    # volumes:
+    #   - .:/demorepo
     ports:
       - 8000:8000
     depends_on:
       - postgres-db
     environment:
-      - DB_USERNAME=${DB_USERNAME}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_HOST=postgres-db
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=grupo4
+      - DB_HOST=localhost
       - DB_PORT=5432
-      - DB_NAME=${DB_NAME}
+      - DB_NAME=LosVinos
     networks:
       - demorepo_net
       
