@@ -9,6 +9,7 @@ app = FastAPI()
 
 #Keep retrying until DB connects
 success = False
+retry_count = 0
 init = None
 while (not success):
   try:
@@ -19,7 +20,8 @@ while (not success):
   except Exception as error:
     print("\033[91m" + "ERROR" + "\033[0m" +":\tConnection failed. Detail:\n",f"{error}")
     time.sleep(3)
-    print("\033[92m" + "INFO" + "\033[0m" +":\tNow retrying...")
+    print("\033[92m" + "INFO" + "\033[0m" + f":\tNow retrying... ({retry_count})")
+    retry_count += 1
 
 #HACK: This checks if database exists and creates it if not, not very proud of how it's done but it works
 with init.connect() as connection:
