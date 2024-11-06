@@ -2,17 +2,26 @@ from fastapi import FastAPI, Request, HTTPException
 from sqlmodel import SQLModel, create_engine, text
 from src.Repository import DirectoryRepository
 from src.directoryDTO import DirectoryDTO
-from dotenv import load_dotenv
 import os
+import time
 
 app = FastAPI()
 
-#! Delete later. Is unnecessary on Docker installation per professor's opinion
-load_dotenv("../.env")
+#Keep retrying until DB connects
+success = False
+init = None
+while (not success):
+  try:
+    init = create_engine(f"postgresql+pg8000://{os.getenv('DB_USERNAME', 'postgres')}:{os.getenv('DB_PASSWORD', 'grupo4')}@{os.getenv('DB_HOST', 'localhost')}:{os.getenv('DB_PORT', '5432')}/postgres", isolation_level="AUTOCOMMIT")
+    with init.connect() as connection:
+      print("\033[92m" + "INFO" + "\033[0m" +":\tConnection success!")
+      success = True
+  except Exception as error:
+    print("\033[91m" + "ERROR" + "\033[0m" +":\tConnection failed. Detail:\n",f"{error}")
+    time.sleep(3)
+    print("\033[92m" + "INFO" + "\033[0m" +":\tNow retrying...")
 
 #HACK: This checks if database exists and creates it if not, not very proud of how it's done but it works
-init = create_engine(f"postgresql+pg8000://{os.getenv('DB_USERNAME', 'postgres')}:{os.getenv('DB_PASSWORD', 'grupo4')}@{os.getenv('DB_HOST', 'localhost')}:{os.getenv('DB_PORT', '5432')}/postgres", isolation_level="AUTOCOMMIT")
-
 with init.connect() as connection:
   db_name = os.getenv('DB_NAME', 'LosVinos').lower()
   result = connection.execute(text(f"select exists(SELECT datname FROM pg_catalog.pg_database WHERE lower(datname) = lower('{os.getenv('DB_NAME')}'));"))
