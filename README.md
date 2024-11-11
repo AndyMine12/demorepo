@@ -1,5 +1,6 @@
 # Small web service for Docker practice in "Cloud Computing" #
-## Made with FastAPI in Python ##
+## Grupo 7 - Chancay Forero Madera ##
+### Made with FastAPI in Python ###
 
 Copiar contenido del archivo .env.template en un nuevo archivo creado .env en el mismo directorio donde se encuentra el archivo .env.template
 
