@@ -5,9 +5,9 @@ services:
     image: 'postgres:15.0-alpine'
     restart: always
     environment:
-      POSTGRES_USER: ${DB_USERNAME}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: grupo4
+      POSTGRES_DB: LosVinos
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -30,22 +30,16 @@ services:
     depends_on:
       - postgres-db
     environment:
-      - DB_USERNAME=${DB_USERNAME}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_HOST="postgres-db"
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=grupo4
+      - DB_HOST=localhost
       - DB_PORT=5432
-      - DB_NAME=${DB_NAME}
+      - DB_NAME=LosVinos
     networks:
       - demorepo_net
       
 volumes:
   postgres_data:
-    driver: local
-    driver_opts:
-      type: "nfs"
-      o: "addr=nfs01,rw"
-      device: ":/data/docker-vols/grupo7/postgres_data"
 
 networks:
   demorepo_net:
-    driver: overlay
